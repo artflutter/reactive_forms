@@ -220,7 +220,7 @@ abstract class AbstractControl<T> {
   bool get enabled => !disabled;
 
   /// True whether the control has validation errors.
-  bool get hasErrors => errors.isNotEmpty;
+  bool get hasErrors => _errors.isNotEmpty;
 
   /// The validation status of the control.
   ///
@@ -625,7 +625,7 @@ abstract class AbstractControl<T> {
 
   Map<String, dynamic> _runValidators() {
     final errors = <String, dynamic>{};
-    for (final validator in validators) {
+    for (final validator in _validators) {
       final error = validator.validate(this);
       if (error != null) {
         errors.addAll(error);
@@ -700,7 +700,7 @@ abstract class AbstractControl<T> {
     _debounceTimer = Timer(
       Duration(milliseconds: _asyncValidatorsDebounceTime),
       () {
-        final validatorsStream = Stream.fromFutures(asyncValidators
+        final validatorsStream = Stream.fromFutures(_asyncValidators
             .map((validator) => validator.validate(this))
             .toList());
 
@@ -843,6 +843,21 @@ class FormControl<T> extends AbstractControl<T> {
       this.value = value;
     } else {
       updateValueAndValidity();
+    }
+  }
+
+  FormControl.lazy({
+    T? value,
+    super.validators,
+    super.asyncValidators,
+    super.asyncValidatorsDebounceTime,
+    super.touched,
+    super.disabled,
+  }) {
+    if (value != null) {
+      this.value = value;
+    } else {
+      updateValueAndValidity(updateParent: false, emitEvent: false);
     }
   }
 
@@ -1074,7 +1089,7 @@ abstract class FormControlCollection<T> extends AbstractControl<T> {
   ///
   /// This is for internal use only.
   @protected
-  void emitsCollectionChanged(List<AbstractControl<Object?>> controls) {
+  void emitsCollectionChanged(Iterable<AbstractControl<Object?>> controls) {
     _collectionChanges.add(List.unmodifiable(controls));
   }
 
@@ -1159,6 +1174,25 @@ class FormGroup extends FormControlCollection<Map<String, Object?>> {
 
     if (disabled) {
       markAsDisabled(emitEvent: false);
+    }
+  }
+
+  FormGroup.lazy(
+    Map<String, AbstractControl<dynamic>> controls, {
+    super.validators,
+    super.asyncValidators,
+    super.asyncValidatorsDebounceTime,
+    bool disabled = false,
+  })  : assert(
+            !controls.keys.any((name) => name.contains(_controlNameDelimiter)),
+            'Control name should not contain dot($_controlNameDelimiter)'),
+        super(
+          disabled: disabled,
+        ) {
+    addAll(controls, updateParent: false, emitEvent: false);
+
+    if (disabled) {
+      markAsDisabled(updateParent: false, emitEvent: false);
     }
   }
 
@@ -1302,7 +1336,7 @@ class FormGroup extends FormControlCollection<Map<String, Object?>> {
   @override
   void markAsDisabled({bool updateParent = true, bool emitEvent = true}) {
     _controls.forEach((_, control) {
-      control.markAsDisabled(updateParent: true, emitEvent: emitEvent);
+      control.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
     });
     super.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
   }
@@ -1329,14 +1363,15 @@ class FormGroup extends FormControlCollection<Map<String, Object?>> {
   }
 
   /// Appends all [controls] to the group.
-  void addAll(Map<String, AbstractControl<dynamic>> controls) {
+  void addAll(Map<String, AbstractControl<dynamic>> controls,
+      {bool updateParent = true, bool emitEvent = true}) {
     _controls.addAll(controls);
     controls.forEach((name, control) {
       control.parent = this;
     });
-    updateValueAndValidity();
-    updateTouched();
-    updatePristine();
+    updateValueAndValidity(updateParent: updateParent, emitEvent: emitEvent);
+    updateTouched(updateParent: updateParent);
+    updatePristine(updateParent: updateParent);
     emitsCollectionChanged(_controls.values.toList());
   }
 
@@ -1388,6 +1423,17 @@ class FormGroup extends FormControlCollection<Map<String, Object?>> {
     });
 
     return allErrors;
+  }
+
+  @override
+  bool get hasErrors {
+    for (final control in _controls.values) {
+      if (control.enabled && control.hasErrors) {
+        return true;
+      }
+    }
+
+    return super.hasErrors;
   }
 
   /// Sets the value of the [FormGroup].
@@ -1670,6 +1716,22 @@ class FormArray<T> extends FormControlCollection<List<T?>> {
     }
   }
 
+  FormArray.lazy(
+    List<AbstractControl<T>> controls, {
+    super.validators,
+    super.asyncValidators,
+    super.asyncValidatorsDebounceTime,
+    bool disabled = false,
+  }) : super(
+          disabled: disabled,
+        ) {
+    addAll(controls, updateParent: false, emitEvent: false);
+
+    if (disabled) {
+      markAsDisabled(updateParent: false, emitEvent: false);
+    }
+  }
+
   /// Gets the list of child controls.
   List<AbstractControl<T>> get controls =>
       List<AbstractControl<T>>.unmodifiable(_controls);
@@ -1693,6 +1755,17 @@ class FormArray<T> extends FormControlCollection<List<T?>> {
   @override
   set value(List<T?>? value) {
     updateValue(value);
+  }
+
+  @override
+  bool get hasErrors {
+    for (final control in _controls) {
+      if (control.enabled && control.hasErrors) {
+        return true;
+      }
+    }
+
+    return super.hasErrors;
   }
 
   /// Gets the values of controls as an [Iterable].
