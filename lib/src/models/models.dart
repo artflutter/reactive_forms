@@ -1302,7 +1302,7 @@ class FormGroup extends FormControlCollection<Map<String, Object?>> {
   @override
   void markAsDisabled({bool updateParent = true, bool emitEvent = true}) {
     _controls.forEach((_, control) {
-      control.markAsDisabled(updateParent: true, emitEvent: emitEvent);
+      control.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
     });
     super.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
   }
@@ -1723,7 +1723,7 @@ class FormArray<T> extends FormControlCollection<List<T?>> {
   @override
   void markAsDisabled({bool updateParent = true, bool emitEvent = true}) {
     for (final control in _controls) {
-      control.markAsDisabled(updateParent: true, emitEvent: emitEvent);
+      control.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
     }
     super.markAsDisabled(updateParent: updateParent, emitEvent: emitEvent);
   }
