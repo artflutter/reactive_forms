@@ -5,7 +5,7 @@ void main() {
   group('Max validator tests', () {
     test('FormControl with lower value is valid', () {
       // Given: a valid control
-      final control = FormControl<int>(
+      final control = FormControl<int>.lazy(
         value: 10,
         validators: [Validators.max(20)],
       );
@@ -16,7 +16,7 @@ void main() {
 
     test('FormControl with equals value is valid', () {
       // Given: an invalid control
-      final control = FormControl<int>(
+      final control = FormControl<int>.lazy(
         value: 20,
         validators: [Validators.max(20)],
       );
@@ -27,10 +27,11 @@ void main() {
 
     test('FormControl with a grater than value is invalid', () {
       // Given: an invalid control
-      final control = FormControl<int>(
+      final control = FormControl<int>.lazy(
         value: 30,
         validators: [Validators.max(20)],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(control.valid, false);
@@ -38,9 +39,10 @@ void main() {
 
     test('FormControl with lower value is valid', () {
       // Given: a valid control
-      final control = FormControl<int>(
+      final control = FormControl<int>.lazy(
         validators: [Validators.max(20)],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is valid
       expect(control.valid, false);

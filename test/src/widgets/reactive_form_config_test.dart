@@ -6,11 +6,14 @@ void main() {
   group('ReactiveFormConfig Tests', () {
     testWidgets('Show local validation message', (WidgetTester tester) async {
       // Given: an invalid form with a required field
-      final form = FormGroup({
-        'requiredField': FormControl<String>(
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'requiredField': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // And: a global and widget level definition for required validation
       // message
@@ -49,11 +52,14 @@ void main() {
 
     testWidgets('Show global validation message', (WidgetTester tester) async {
       // Given: an invalid form with a required field
-      final form = FormGroup({
-        'requiredField': FormControl<String>(
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'requiredField': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // And: a global definition for required validation message
       final expectedErrorText = 'Field is mandatory';
@@ -88,14 +94,18 @@ void main() {
       );
     });
 
-    testWidgets('No local either global validation messages',
-        (WidgetTester tester) async {
+    testWidgets('No local either global validation messages', (
+      WidgetTester tester,
+    ) async {
       // Given: an invalid form with a required field
-      final form = FormGroup({
-        'requiredField': FormControl<String>(
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'requiredField': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // And: a global and widget level definition for another error different
       // from required validation message

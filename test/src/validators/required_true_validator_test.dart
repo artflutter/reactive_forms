@@ -5,24 +5,22 @@ void main() {
   group('Required True validator tests', () {
     test('FormControl is invalid if value is false', () {
       // Given: an invalid control
-      final control = FormControl<bool>(
+      final control = FormControl<bool>.lazy(
         value: false,
         validators: [Validators.requiredTrue],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(control.valid, false);
       expect(control.errors, {
-        ValidationMessage.requiredTrue: {
-          'required': true,
-          'actual': false,
-        }
+        ValidationMessage.requiredTrue: {'required': true, 'actual': false},
       });
     });
 
     test('FormControl is valid if value is true', () {
       // Given: a valid control
-      final control = FormControl<bool>(
+      final control = FormControl<bool>.lazy(
         value: true,
         validators: [Validators.requiredTrue],
       );
@@ -33,23 +31,21 @@ void main() {
 
     test('FormControl is invalid if value is null', () {
       // Given: a control with null value
-      final control = FormControl<bool>(
+      final control = FormControl<bool>.lazy(
         validators: [Validators.requiredTrue],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(control.valid, false);
       expect(control.errors, {
-        ValidationMessage.requiredTrue: {
-          'required': true,
-          'actual': null,
-        }
+        ValidationMessage.requiredTrue: {'required': true, 'actual': null},
       });
     });
 
     test('FormControl is invalid if value change to false', () {
       // Given: a valid control
-      final control = FormControl<bool>(
+      final control = FormControl<bool>.lazy(
         value: true,
         validators: [Validators.requiredTrue],
       );
@@ -60,16 +56,13 @@ void main() {
       // Then: control is invalid
       expect(control.valid, false);
       expect(control.errors, {
-        ValidationMessage.requiredTrue: {
-          'required': true,
-          'actual': false,
-        }
+        ValidationMessage.requiredTrue: {'required': true, 'actual': false},
       });
     });
 
     test('FormControl is valid if value change to true', () {
       // Given: an invalid control
-      final control = FormControl<bool>(
+      final control = FormControl<bool>.lazy(
         value: false,
         validators: [Validators.requiredTrue],
       );

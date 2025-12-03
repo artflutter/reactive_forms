@@ -5,10 +5,11 @@ void main() {
   group('MinLength Validator Tests', () {
     test('FormControl invalid if minLength invalid', () {
       // Given: a invalid control
-      final control = FormControl(
+      final control = FormControl.lazy(
         value: 'Hello',
         validators: [Validators.minLength(6)],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(control.invalid, true);
@@ -17,10 +18,11 @@ void main() {
 
     test('FormControl invalid if minLength invalid', () {
       // Given: a invalid control
-      final control = FormControl<List<String>>(
+      final control = FormControl<List<String>>.lazy(
         value: ['Hello'],
         validators: [Validators.minLength(6)],
       );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(control.invalid, true);
@@ -29,7 +31,7 @@ void main() {
 
     test('FormControl valid if minLength valid', () {
       // Given: a valid control
-      final control = FormControl(
+      final control = FormControl.lazy(
         value: 'Reactive Forms',
         validators: [Validators.minLength(6)],
       );
@@ -40,8 +42,8 @@ void main() {
 
     test('FormGroup valid if minLength valid', () {
       // Given: a valid control
-      final form = FormGroup({
-        'name': FormControl<String>(
+      final form = FormGroup.lazy({
+        'name': FormControl<String>.lazy(
           value: 'Reactive Forms',
           validators: [Validators.minLength(6)],
         ),
@@ -53,11 +55,13 @@ void main() {
 
     test('FormGroup valid if control value is null', () {
       // Given: a valid control
-      final form = FormGroup({
-        'name': FormControl<String>(
-          validators: [Validators.minLength(6)],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            validators: [Validators.minLength(6)],
+          ),
+        },
+      );
 
       // Expect: control is valid
       expect(form.valid, true);
@@ -65,12 +69,15 @@ void main() {
 
     test('FormGroup invalid if minLength invalid', () {
       // Given: an invalid control
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'Forms',
-          validators: [Validators.minLength(6)],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Forms',
+            validators: [Validators.minLength(6)],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: control is invalid
       expect(form.valid, false);
@@ -78,12 +85,11 @@ void main() {
 
     test('FormArray invalid if minLength invalid', () {
       // Given: an invalid array
-      final array = FormArray<Object>([
-        FormControl(),
-        FormControl(),
-      ], validators: [
-        Validators.minLength(3)
-      ]);
+      final array = FormArray<Object>.lazy(
+        [FormControl.lazy(), FormControl.lazy()],
+        validators: [Validators.minLength(3)],
+      );
+      array.updateValueAndValidity(updateParent: false);
 
       // Expect: array is invalid
       expect(array.invalid, true);
@@ -92,13 +98,14 @@ void main() {
 
     test('FormArray valid if minLength valid', () {
       // Given: a valid array
-      final array = FormArray<Object>([
-        FormControl(),
-        FormControl(),
-        FormControl(),
-      ], validators: [
-        Validators.minLength(3)
-      ]);
+      final array = FormArray<Object>.lazy(
+        [
+          FormControl.lazy(),
+          FormControl.lazy(),
+          FormControl.lazy(),
+        ],
+        validators: [Validators.minLength(3)],
+      );
 
       // Expect: array is valid
       expect(array.valid, true);
@@ -106,12 +113,13 @@ void main() {
 
     test('FormGroup valid if minLength valid', () {
       // Given: a valid group
-      final array = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      }, validators: [
-        Validators.minLength(2)
-      ]);
+      final array = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+        validators: [Validators.minLength(2)],
+      );
 
       // Expect: group is valid
       expect(array.valid, true);
@@ -119,11 +127,11 @@ void main() {
 
     test('FormGroup invalid if minLength invalid', () {
       // Given: an invalid group
-      final array = FormGroup({
-        'name': FormControl<String>(),
-      }, validators: [
-        Validators.minLength(2)
-      ]);
+      final array = FormGroup.lazy(
+        {'name': FormControl<String>.lazy()},
+        validators: [Validators.minLength(2)],
+      );
+      array.updateValueAndValidity();
 
       // Expect: group is invalid
       expect(array.valid, false);

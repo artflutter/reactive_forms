@@ -19,35 +19,31 @@ void main() {
       },
     );
 
-    testWidgets(
-      'No error if formControl',
-      (WidgetTester tester) async {
-        // Given: a ReactiveFormField with formControlName in null
-        final reactiveFormField = ReactiveFormField<Object, Object>(
+    testWidgets('No error if formControl', (WidgetTester tester) async {
+      // Given: a ReactiveFormField with formControlName in null
+      final reactiveFormField = ReactiveFormField<Object, Object>(
+        formControlName: null,
+        formControl: FormControl.lazy(),
+        builder: (_) => Container(),
+      );
+
+      expect(
+        reactiveFormField,
+        isInstanceOf<ReactiveFormField<Object, Object>>(),
+      );
+    });
+
+    group('-> ValueAccessor for non-matching generic types', () {
+      testWidgets('throws no error if ValueAccessor is set', (tester) async {
+        final field = ReactiveFormField<String, int>(
           formControlName: null,
-          formControl: FormControl(),
+          valueAccessor: _TestStringIntValueAccessor(),
+          formControl: FormControl.lazy(),
           builder: (_) => Container(),
         );
 
-        expect(reactiveFormField,
-            isInstanceOf<ReactiveFormField<Object, Object>>());
-      },
-    );
-
-    group('-> ValueAccessor for non-matching generic types', () {
-      testWidgets(
-        'throws no error if ValueAccessor is set',
-        (tester) async {
-          final field = ReactiveFormField<String, int>(
-            formControlName: null,
-            valueAccessor: _TestStringIntValueAccessor(),
-            formControl: FormControl(),
-            builder: (_) => Container(),
-          );
-
-          await tester.pumpWidget(field);
-        },
-      );
+        await tester.pumpWidget(field);
+      });
     });
   });
 }

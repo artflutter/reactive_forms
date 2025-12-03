@@ -4,7 +4,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 void main() {
   group('Form Control', () {
     test('FormControl has no errors by default', () {
-      final formControl = FormControl(
+      final formControl = FormControl.lazy(
         value: 'hello',
         validators: [Validators.required],
       );
@@ -13,7 +13,7 @@ void main() {
     });
 
     test('FormControl has no errors if is valid', () {
-      final formControl = FormControl<dynamic>(
+      final formControl = FormControl<dynamic>.lazy(
         validators: [Validators.required],
       );
 
@@ -23,7 +23,7 @@ void main() {
     });
 
     test('FormControl errors contains error', () {
-      final formControl = FormControl(
+      final formControl = FormControl.lazy(
         value: 'hello',
         validators: [Validators.required],
       );
@@ -34,27 +34,28 @@ void main() {
     });
 
     test('FormControl.errors contains all errors', () {
-      final formControl = FormControl(
+      final formControl = FormControl.lazy(
         value: 'hi',
-        validators: [
-          Validators.email,
-          Validators.minLength(5),
-        ],
+        validators: [Validators.email, Validators.minLength(5)],
       );
+      formControl.updateValueAndValidity(updateParent: false);
 
       expect(formControl.errors.keys.length, 2);
-      expect(formControl.errors.containsKey(ValidationMessage.email), true,
-          reason: 'mail');
-      expect(formControl.errors[ValidationMessage.minLength] != null, true,
-          reason: 'minLength');
+      expect(
+        formControl.errors.containsKey(ValidationMessage.email),
+        true,
+        reason: 'mail',
+      );
+      expect(
+        formControl.errors[ValidationMessage.minLength] != null,
+        true,
+        reason: 'minLength',
+      );
     });
 
     test('FormControl.errors contains all matching errors', () {
-      final formControl = FormControl<dynamic>(
-        validators: [
-          Validators.required,
-          Validators.minLength(5),
-        ],
+      final formControl = FormControl<dynamic>.lazy(
+        validators: [Validators.required, Validators.minLength(5)],
       );
 
       formControl.value = 'hi';
@@ -64,22 +65,18 @@ void main() {
     });
 
     test('FormControl with default value contains all matching errors', () {
-      final formControl = FormControl(
+      final formControl = FormControl.lazy(
         value: 'hi',
-        validators: [
-          Validators.required,
-          Validators.minLength(5),
-        ],
+        validators: [Validators.required, Validators.minLength(5)],
       );
+      formControl.updateValueAndValidity(updateParent: false);
 
       expect(formControl.errors.keys.length, 1);
       expect(formControl.errors[ValidationMessage.minLength] != null, true);
     });
 
     test('Reset a control set value to null', () {
-      final formControl = FormControl(
-        value: 'john doe',
-      );
+      final formControl = FormControl<String>.lazy();
 
       formControl.value = 'hello john';
 
@@ -90,13 +87,16 @@ void main() {
 
     test('Assert error if debounce time < 0', () {
       void formControl() =>
-          FormControl<dynamic>(asyncValidatorsDebounceTime: -1);
+          // ignore: deprecated_member_use_from_same_package
+          FormControl<dynamic>.lazy(
+            asyncValidatorsDebounceTime: -1,
+          );
       expect(formControl, throwsAssertionError);
     });
 
     test('Call enable() set enabled status', () {
       // Given: a control
-      final control = FormControl<dynamic>();
+      final control = FormControl<dynamic>.lazy();
 
       // Expect: control is enabled
       expect(control.enabled, true);
@@ -112,7 +112,9 @@ void main() {
 
     test('Create control with disabled status', () {
       // Given: a disabled control
-      final control = FormControl<dynamic>(disabled: true);
+      final control = FormControl<dynamic>.lazy(
+        disabled: true,
+      );
 
       // Expect: is disabled
       expect(control.disabled, true);
@@ -122,7 +124,9 @@ void main() {
 
     test('Control disabled does not validate', () {
       // Given: a required control
-      final control = FormControl<String>(validators: [Validators.required]);
+      final control = FormControl<String>.lazy(
+        validators: [Validators.required],
+      );
 
       // When: disable the control
       control.markAsDisabled();
@@ -137,7 +141,7 @@ void main() {
 
     test('Resets a control and sets initial value', () {
       // Given: a touched control with some default value
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         value: 'someValue',
         touched: true,
       );
@@ -154,7 +158,7 @@ void main() {
 
     test('Resets a control and sets initial value and disabled state', () {
       // Given: a touched control with some default value
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         value: 'someValue',
         touched: true,
       );
@@ -173,7 +177,10 @@ void main() {
 
     test('Resets a control to enable state', () {
       // Given: a disabled control
-      final control = FormControl<String>(value: 'someValue', disabled: true);
+      final control = FormControl<String>.lazy(
+        value: 'someValue',
+        disabled: true,
+      );
 
       // When: reset control
       control.reset(disabled: false);
@@ -184,7 +191,7 @@ void main() {
 
     test('Reset a control marks it as pristine', () {
       // Given: a control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // When: control is dirty
       control.markAsDirty();
@@ -198,7 +205,7 @@ void main() {
 
     test('Reset a control and remove focus at the same time', () {
       // Given: a control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // When: control request focus
       control.focus();
@@ -215,7 +222,7 @@ void main() {
 
     test('Set value to a control programmatically does not marks it dirty', () {
       // Given: a control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // When: set a value
       control.value = 'some value';
@@ -226,7 +233,7 @@ void main() {
 
     test('SetErrors marks control as dirty by default', () {
       // Given: a control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // When: set errors
       control.setErrors(<String, dynamic>{'someError': true});
@@ -237,11 +244,12 @@ void main() {
 
     test('Set errors and keep the control as pristine', () {
       // Given: a control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // When: set errors and specify markAsDirty = false
-      control
-          .setErrors(<String, dynamic>{'someError': true}, markAsDirty: false);
+      control.setErrors(<String, dynamic>{
+        'someError': true,
+      }, markAsDirty: false);
 
       // Then: the control is pristine
       expect(control.pristine, true);
@@ -249,7 +257,10 @@ void main() {
 
     test('Checks if control has error', () {
       // Given: a required and invalid control
-      final control = FormControl<String>(validators: [Validators.required]);
+      final control = FormControl<String>.lazy(
+        validators: [Validators.required],
+      );
+      control.updateValueAndValidity(updateParent: false);
 
       // Expect: control has Validators.required error
       expect(control.hasError(ValidationMessage.required), true);
@@ -257,7 +268,7 @@ void main() {
 
     test('Checks if control has error', () {
       // Given: a valid control
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
 
       // Expect: control doesn't have Validators.required error
       expect(control.hasError(ValidationMessage.required), false);
@@ -265,7 +276,10 @@ void main() {
 
     test('Reports control error', () {
       // Given: a required and invalid control
-      final control = FormControl<String>(validators: [Validators.required]);
+      final control = FormControl<String>.lazy(
+        validators: [Validators.required],
+      );
+      control.updateValueAndValidity(updateParent: false);
 
       // When: get tha control error by errorCode
       final error = control.getError(ValidationMessage.required);
@@ -276,7 +290,9 @@ void main() {
 
     test('Patch control value', () {
       // Given: a control
-      final control = FormControl<String>(value: 'John');
+      final control = FormControl<String>.lazy(
+        value: 'John',
+      );
 
       // When: patch control value
       final patchedName = 'John Doe';
@@ -288,17 +304,18 @@ void main() {
 
     test('FormControl call setValidators()', () {
       // Given: a control with an invalid email value
-      final formControl = FormControl<String>(
+      final formControl = FormControl<String>.lazy(
         value: 'hello',
         validators: [Validators.email],
       );
+      formControl.updateValueAndValidity(updateParent: false);
 
       // Expect: the control is invalid
       expect(formControl.hasError(ValidationMessage.email), true);
 
       // When: setting new validators and update validity
       formControl.setValidators([Validators.minLength(6)]);
-      formControl.updateValueAndValidity();
+      formControl.updateValueAndValidity(updateParent: false);
 
       // Then: old validators are not presents, only the new ones
       expect(formControl.validators.length, 1);
@@ -308,7 +325,7 @@ void main() {
 
     test('FormControl call setValidators() without auto validate', () {
       // Given: a control without validators
-      final formControl = FormControl<String>();
+      final formControl = FormControl<String>.lazy();
 
       // Expect: the control is valid
       expect(formControl.hasErrors, false);
@@ -324,7 +341,7 @@ void main() {
 
     test('FormControl call setValidators() with auto validate', () {
       // Given: a control without validators
-      final formControl = FormControl<String>();
+      final formControl = FormControl<String>.lazy();
 
       // Expect: the control is valid
       expect(formControl.hasErrors, false);
@@ -341,16 +358,17 @@ void main() {
 
     test('FormControl call clearValidators()', () {
       // Given: a control with a required value
-      final formControl = FormControl<String>(
+      final formControl = FormControl<String>.lazy(
         validators: [Validators.required],
       );
+      formControl.updateValueAndValidity(updateParent: false);
 
       // Expect: the control is invalid
       expect(formControl.hasError(ValidationMessage.required), true);
 
       // When: clear validators
       formControl.clearValidators();
-      formControl.updateValueAndValidity();
+      formControl.updateValueAndValidity(updateParent: false);
 
       // Then: control hasn't validators and control is valid
       expect(formControl.validators.isEmpty, true);
@@ -359,14 +377,15 @@ void main() {
 
     test('FormControl call setAsyncValidators()', () {
       // Given: a control with an invalid email value
-      final formControl = FormControl<String>();
+      final formControl = FormControl<String>.lazy();
 
       // Expect: the control has any async validator
       expect(formControl.asyncValidators.isEmpty, true);
 
       // When: setting new async validators
-      formControl.setAsyncValidators(
-          [Validators.delegateAsync((control) => Future.value(null))]);
+      formControl.setAsyncValidators([
+        Validators.delegateAsync((control) => Future.value(null)),
+      ]);
 
       // Then: a new async validator is added
       expect(formControl.asyncValidators.length, 1);
@@ -374,7 +393,9 @@ void main() {
 
     test('Test that markAsPending() change the status to PENDING.', () {
       // Given: a control with valid status.
-      final control = FormControl<String>(value: 'Reactive Forms');
+      final control = FormControl<String>.lazy(
+        value: 'Reactive Forms',
+      );
 
       // Expect: the control to be VALID and not PENDING.
       expect(control.valid, true);

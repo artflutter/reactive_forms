@@ -12,14 +12,17 @@ void main() {
       ];
 
       // a form with a list of selected emails
-      final form = FormGroup({
-        'selectedEmails': FormArray<bool>(
-          [], // an empty array of controls
-          validators: [
-            Validators.delegate(_emptyAddressee),
-          ], // validates that at least one email is selected
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'selectedEmails': FormArray<bool>.lazy(
+            [], // an empty array of controls
+            validators: [
+              Validators.delegate(_emptyAddressee),
+            ],
+          ), // validates that at least one email is selected
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // get the array of controls
       final formArray = form.control('selectedEmails') as FormArray<bool>;
@@ -27,7 +30,11 @@ void main() {
       // populates the array of controls.
       // for each contact add a boolean form control to the array.
       formArray.addAll(
-        contacts.map((email) => FormControl<bool>(value: true)).toList(),
+        contacts
+            .map((email) => FormControl<bool>.lazy(
+                  value: true,
+                ))
+            .toList(),
       );
 
       formArray.control('0').value = false;
@@ -46,14 +53,16 @@ void main() {
       ];
 
       // a form with a list of selected emails
-      final form = FormGroup({
-        'selectedEmails': FormArray<bool>(
-          [], // an empty array of controls
-          validators: [
-            Validators.delegate(_emptyAddressee),
-          ], // validates that at least one email is selected
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'selectedEmails': FormArray<bool>.lazy(
+            [], // an empty array of controls
+            validators: [
+              Validators.delegate(_emptyAddressee),
+            ],
+          ), // validates that at least one email is selected
+        },
+      );
 
       // get the array of controls
       final formArray = form.control('selectedEmails') as FormArray<bool>;
@@ -61,7 +70,11 @@ void main() {
       // populates the array of controls.
       // for each contact add a boolean form control to the array.
       formArray.addAll(
-        contacts.map((email) => FormControl<bool>(value: true)).toList(),
+        contacts
+            .map((email) => FormControl<bool>.lazy(
+                  value: true,
+                ))
+            .toList(),
       );
 
       formArray.control('0').value = false;
@@ -72,7 +85,9 @@ void main() {
     });
 
     test('Throws FormArrayInvalidIndexException if index not a valid int', () {
-      final array = FormArray([]);
+      final array = FormArray.lazy(
+        [],
+      );
 
       expect(() => array.control('control'),
           throwsA(isInstanceOf<FormArrayInvalidIndexException>()));
@@ -80,11 +95,13 @@ void main() {
 
     test('Add values to array sets value to each item', () {
       // Given: an array with several items
-      final array = FormArray<int>([
-        FormControl<int>(),
-        FormControl<int>(),
-        FormControl<int>(),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(),
+          FormControl<int>.lazy(),
+          FormControl<int>.lazy(),
+        ],
+      );
 
       //When: set a value to array
       array.value = [1, 2, 3];
@@ -96,19 +113,31 @@ void main() {
     });
 
     test('Throws FormControlNotFoundException if invalid control index', () {
-      final array = FormArray([]);
+      final array = FormArray.lazy(
+        [],
+      );
 
-      expect(() => array.control('0'),
-          throwsA(isInstanceOf<FormControlNotFoundException>()));
+      expect(
+        () => array.control('0'),
+        throwsA(isInstanceOf<FormControlNotFoundException>()),
+      );
     });
 
     test('Reset array restores default value of all items to null', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.reset();
@@ -123,11 +152,19 @@ void main() {
         'Reset array restores default value of all items to null when calling resetState with empty array',
         () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.resetState([]);
@@ -140,11 +177,19 @@ void main() {
 
     test('Reset array with initial values', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.reset(value: [4, 5, 6]);
@@ -157,11 +202,19 @@ void main() {
 
     test('Reset array with less initial values', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.reset(value: [4, 5]);
@@ -174,11 +227,19 @@ void main() {
 
     test('Reset array with more initial values', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.reset(value: [4, 5, 6, 7]);
@@ -193,9 +254,12 @@ void main() {
 
     test('Reset array with disabled states', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-      ]);
+      final array = FormArray<int>.lazy(
+        [FormControl<int>.lazy()],
+      );
+
+      array.value = [1];
+      expect(array.control('0').value, 1);
 
       // And: reset array value and disable the control
       array.resetState([
@@ -209,9 +273,13 @@ void main() {
 
     test('Reset array with state', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          )
+        ],
+      );
 
       // And: reset array value with state
       array.resetState([
@@ -225,9 +293,9 @@ void main() {
 
     test('Reset array marks it as pristine', () {
       // Given: an array
-      final array = FormArray<int>([
-        FormControl<int>(),
-      ]);
+      final array = FormArray<int>.lazy(
+        [FormControl<int>.lazy()],
+      );
 
       // When: mark it as dirty
       array.markAsDirty();
@@ -244,17 +312,19 @@ void main() {
 
     test('Reset array state marks it as pristine', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          )
+        ],
+      );
 
       // When: mark it as dirty
       array.markAsDirty();
 
       // And: reset array value with state
-      array.resetState([
-        ControlState(value: 2),
-      ]);
+      array.resetState([ControlState(value: 2)]);
 
       //Then: array is pristine
       expect(array.pristine, true, reason: 'array is not pristine');
@@ -262,13 +332,18 @@ void main() {
 
     test('Adding a control to array adds a new value', () {
       // Given: an empty array
-      final array = FormArray([]);
+      final array = FormArray.lazy(
+        [],
+      );
+      array.updateValueAndValidity(updateParent: false);
 
       // Expect value as an empty array
       expect(<Object?>[], array.value);
 
       // When: add one control
-      array.add(FormControl<int>(value: 1));
+      array.add(FormControl<int>.lazy(
+        value: 1,
+      ));
 
       // Then: array has one value
       expect(array.value, [1]);
@@ -276,9 +351,14 @@ void main() {
 
     test('Array is invalid if control is invalid', () {
       // Given: an array with invalid control
-      final array = FormArray<dynamic>([
-        FormControl<dynamic>(validators: [Validators.required]),
-      ]);
+      final array = FormArray<dynamic>.lazy(
+        [
+          FormControl<dynamic>.lazy(
+            validators: [Validators.required],
+          ),
+        ],
+      );
+      array.updateValueAndValidity(updateParent: false);
 
       // Expect: array is also invalid
       expect(array.valid, false);
@@ -286,11 +366,13 @@ void main() {
 
     test('FormArray.controls contains controls collection', () {
       // Given: an array with three controls
-      final array = FormArray<dynamic>([
-        FormControl<dynamic>(),
-        FormControl<dynamic>(),
-        FormControl<dynamic>(),
-      ]);
+      final array = FormArray<dynamic>.lazy(
+        [
+          FormControl<dynamic>.lazy(),
+          FormControl<dynamic>.lazy(),
+          FormControl<dynamic>.lazy(),
+        ],
+      );
 
       // Expect: array contains all children
       expect(array.controls.length, 3);
@@ -298,9 +380,9 @@ void main() {
 
     test('Array notify value changes when control value changes', () {
       // Given: an array with a controls
-      final array = FormArray<dynamic>([
-        FormControl<dynamic>(),
-      ]);
+      final array = FormArray<dynamic>.lazy(
+        [FormControl<dynamic>.lazy()],
+      );
 
       final value = 'Reactive Forms';
 
@@ -313,10 +395,16 @@ void main() {
 
     test('Remove control', () {
       // Given: an array with two controls
-      final array = FormArray<String>([
-        FormControl<String>(value: 'Reactive'),
-        FormControl<String>(value: 'Forms'),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          FormControl<String>.lazy(
+            value: 'Forms',
+          ),
+        ],
+      );
 
       // When: removed last control
       array.remove(array.controls.last);
@@ -327,13 +415,15 @@ void main() {
 
     test('Insert control at index position', () {
       // Given: an array with two controls
-      final array = FormArray<String>([
-        FormControl<String>(),
-        FormControl<String>(),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl<String>.lazy(),
+          FormControl<String>.lazy(),
+        ],
+      );
 
       // When: insert a control in the middle
-      final control = FormControl<String>();
+      final control = FormControl<String>.lazy();
       array.insert(1, control);
 
       // Then: then the control at index 1 is the one inserted
@@ -342,7 +432,9 @@ void main() {
 
     test('Set value to empty array insert the new items', () {
       // Given: an instance of an empty array
-      final array = FormArray<String>([]);
+      final array = FormArray<String>.lazy(
+        [],
+      );
 
       // Expect: the array is empty
       expect(array.controls.length, 0);
@@ -359,9 +451,9 @@ void main() {
 
     test('When an array is disable then all children are disabled', () {
       // Given: a form with controls
-      final array = FormArray<dynamic>([
-        FormControl<dynamic>(),
-      ]);
+      final array = FormArray<dynamic>.lazy(
+        [FormControl<dynamic>.lazy()],
+      );
 
       // When: disable group
       array.markAsDisabled();
@@ -373,10 +465,18 @@ void main() {
 
     test('A control disabled is not part of array value', () {
       // Given: an array with a disable control
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(value: 'Forms', disabled: true),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            value: 'Forms',
+            disabled: true,
+          ),
+        ],
+      );
+      array.updateValueAndValidity(updateParent: false);
 
       // When: get form value
       final arrayValue = array.value;
@@ -388,10 +488,17 @@ void main() {
 
     test('A control disabled is part of array Raw Value', () {
       // Given: an array with a disable control
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(value: 'Forms', disabled: true),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            value: 'Forms',
+            disabled: true,
+          ),
+        ],
+      );
 
       // Expect: raw value includes disabled controls
       expect(array.rawValue.length, 2);
@@ -400,10 +507,17 @@ void main() {
 
     test('Disabled array includes all controls in value and raw value', () {
       // Given: a disabled array
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(value: 'Forms'),
-      ], disabled: true);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            value: 'Forms',
+          ),
+        ],
+        disabled: true,
+      );
 
       // Expect: value and raw value includes all controls
       expect(array.value!.length, 2);
@@ -414,10 +528,17 @@ void main() {
 
     test('Disabled array includes all controls of nested group', () {
       // Given: a disabled array
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(value: 'Forms'),
-      ], disabled: true);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            value: 'Forms',
+          ),
+        ],
+        disabled: true,
+      );
 
       // Expect: value and raw value includes all controls
       expect(array.value!.length, 2);
@@ -428,28 +549,43 @@ void main() {
 
     test('Enable a array enable children', () {
       // Given: a disabled array of groups
-      final addressArray = FormArray([
-        fb.group({
-          'country': FormControl<String>(value: 'Canada'),
-          'city': FormControl<String>(value: 'Toronto', disabled: true),
-        }),
-      ], disabled: true);
+      final addressArray = FormArray.lazy(
+        [
+          fb.group({
+            'country': FormControl<String>.lazy(
+              value: 'Canada',
+            ),
+            'city': FormControl<String>.lazy(
+              value: 'Toronto',
+              disabled: true,
+            ),
+          }),
+        ],
+        disabled: true,
+      );
 
       // Expect: value and raw value includes all controls
       expect(addressArray.value, [
-        {'country': 'Canada', 'city': 'Toronto'}
+        {'country': 'Canada', 'city': 'Toronto'},
       ]);
       expect(addressArray.rawValue, [
-        {'country': 'Canada', 'city': 'Toronto'}
+        {'country': 'Canada', 'city': 'Toronto'},
       ]);
     });
 
     test('Array valid when invalid control is disable', () {
       // Given: an array with an invalid disable control
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(disabled: true, validators: [Validators.required]),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            disabled: true,
+            validators: [Validators.required],
+          ),
+        ],
+      );
 
       // Expect: form is valid
       expect(array.valid, true);
@@ -458,10 +594,16 @@ void main() {
 
     test('Array valid when invalid control is disable', () {
       // Given: an array with an invalid control
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(validators: [Validators.required]),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            validators: [Validators.required],
+          ),
+        ],
+      );
 
       // When: disable invalid control
       array.control('1').markAsDisabled();
@@ -473,10 +615,17 @@ void main() {
 
     test('Array invalid when enable invalid control', () {
       // Given: an array with a invalid disable control
-      final array = FormArray<String>([
-        FormControl(value: 'Reactive'),
-        FormControl(disabled: true, validators: [Validators.required]),
-      ]);
+      final array = FormArray<String>.lazy(
+        [
+          FormControl.lazy(
+            value: 'Reactive',
+          ),
+          FormControl.lazy(
+            disabled: true,
+            validators: [Validators.required],
+          ),
+        ],
+      );
 
       // When: enable invalid control
       array.control('1').markAsEnabled();
@@ -488,9 +637,9 @@ void main() {
 
     test('State error if dispose an array and try to change value', () {
       // Given: an array
-      final array = FormArray<Object>([
-        FormControl(),
-      ]);
+      final array = FormArray<Object>.lazy(
+        [FormControl.lazy()],
+      );
 
       // When: dispose the array
       array.dispose();
@@ -504,11 +653,19 @@ void main() {
 
     test('Set empty array value to array does not update values', () {
       // Given: an array with items with default values
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-        FormControl<int>(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+          FormControl<int>.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // And: reset array
       array.value = [];
@@ -521,13 +678,23 @@ void main() {
 
     test('Get control with nested name', () {
       // Given: a nested array
-      final form = FormGroup({
-        'numbers': FormArray<int>([
-          FormControl(value: 1),
-          FormControl(value: 2),
-          FormControl(value: 3),
-        ]),
-      });
+      final form = FormGroup.lazy(
+        {
+          'numbers': FormArray<int>.lazy(
+            [
+              FormControl.lazy(
+                value: 1,
+              ),
+              FormControl.lazy(
+                value: 2,
+              ),
+              FormControl.lazy(
+                value: 3,
+              ),
+            ],
+          ),
+        },
+      );
 
       // When: get a nested control
       final control = form.control('numbers.2');
@@ -539,10 +706,12 @@ void main() {
 
     test('Array of groups', () {
       // Given: an array of groups
-      final addressArray = FormArray([
-        fb.group({'city': 'Sofia'}),
-        fb.group({'city': 'Havana'}),
-      ]);
+      final addressArray = FormArray.lazy(
+        [
+          fb.group({'city': 'Sofia'}),
+          fb.group({'city': 'Havana'}),
+        ],
+      );
 
       // Expect: array is created
       expect(addressArray.controls.length, 2);
@@ -551,63 +720,89 @@ void main() {
 
     test('Value on nested disabled Form Group', () {
       // Given: an array of groups with a disabled control
-      final addressArray = FormArray([
-        fb.group({
-          'city': FormControl<String>(
-            value: 'Toronto',
-            disabled: true,
-          ),
-        }),
-      ]);
+      final addressArray = FormArray.lazy(
+        [
+          fb.group({
+            'city': FormControl<String>.lazy(
+              value: 'Toronto',
+              disabled: true,
+            ),
+          }),
+        ],
+      );
+      addressArray.updateValueAndValidity(updateParent: false);
 
       // Expect: array is created
       expect(addressArray.controls.length, 1);
       expect(addressArray.value, [
-        {'city': 'Toronto'}
+        {'city': 'Toronto'},
       ]);
     });
 
     test('Raw Value on nested Form Group', () {
       // Given: an array of groups with a disabled control
-      final addressArray = FormArray([
-        fb.group({
-          'country': FormControl<String>(value: 'Canada'),
-          'city': FormControl<String>(value: 'Toronto', disabled: true),
-        }),
-      ]);
+      final addressArray = FormArray.lazy(
+        [
+          fb.group({
+            'country': FormControl<String>.lazy(
+              value: 'Canada',
+            ),
+            'city': FormControl<String>.lazy(
+              value: 'Toronto',
+              disabled: true,
+            ),
+          }),
+        ],
+      );
 
       // Expect: array is created
       expect(addressArray.rawValue, [
-        {
-          'country': 'Canada',
-          'city': 'Toronto',
-        },
+        {'country': 'Canada', 'city': 'Toronto'},
       ]);
     });
 
     test('Focused a control', () {
       // Given: an array
-      final array = FormArray<int>([
-        FormControl(value: 1),
-        FormControl(value: 2),
-        FormControl(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl.lazy(
+            value: 1,
+          ),
+          FormControl.lazy(
+            value: 2,
+          ),
+          FormControl.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // When: set a control focus
       array.focus('0');
 
       // Then: control is focused
-      expect((array.control('0') as FormControl).hasFocus, true,
-          reason: 'control is not focused');
+      expect(
+        (array.control('0') as FormControl).hasFocus,
+        true,
+        reason: 'control is not focused',
+      );
     });
 
     test('Focused first control if no argument specified', () {
       // Given: an array
-      final array = FormArray<int>([
-        FormControl(value: 1),
-        FormControl(value: 2),
-        FormControl(value: 3),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl.lazy(
+            value: 1,
+          ),
+          FormControl.lazy(
+            value: 2,
+          ),
+          FormControl.lazy(
+            value: 3,
+          ),
+        ],
+      );
 
       // When: set a control focus
       array.focus();
@@ -622,10 +817,13 @@ void main() {
 
     test('Focused a nested control', () {
       // Given: array
-      final addressArray = FormArray([
-        fb.group({'city': 'Sofia'}),
-        fb.group({'city': 'Havana'}),
-      ]);
+      final addressArray = FormArray.lazy(
+        [
+          fb.group({'city': 'Sofia'}),
+          fb.group({'city': 'Havana'}),
+        ],
+      );
+      addressArray.updateValueAndValidity(updateParent: false);
 
       // When: set a control focus
       addressArray.focus('0.city');
@@ -638,10 +836,16 @@ void main() {
 
     test('Remove Focus to all control', () {
       // Given: array
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+        ],
+      );
 
       // And: all control with focus
       array.focus('0');
@@ -651,18 +855,30 @@ void main() {
       array.unfocus();
 
       // Then: any control has focus
-      expect((array.control('0') as FormControl).hasFocus, false,
-          reason: 'control is focused');
-      expect((array.control('1') as FormControl).hasFocus, false,
-          reason: 'control is focused');
+      expect(
+        (array.control('0') as FormControl).hasFocus,
+        false,
+        reason: 'control is focused',
+      );
+      expect(
+        (array.control('1') as FormControl).hasFocus,
+        false,
+        reason: 'control is focused',
+      );
     });
 
     test('Clear Array', () {
       // Given: array
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+        ],
+      );
 
       // When: clear array
       array.clear();
@@ -673,10 +889,10 @@ void main() {
 
     test('Disabled Array marks all children as disabled', () {
       // Given: a disabled form
-      final array = FormArray(
+      final array = FormArray.lazy(
         [
-          FormControl<String>(),
-          FormControl<String>(),
+          FormControl<String>.lazy(),
+          FormControl<String>.lazy(),
         ],
         disabled: true,
       );
@@ -689,10 +905,13 @@ void main() {
 
     test('Disabled array changes to enable when enable children', () {
       // Given: a disabled array
-      final array = FormArray([
-        FormControl<String>(),
-        FormControl<String>(),
-      ], disabled: true);
+      final array = FormArray.lazy(
+        [
+          FormControl<String>.lazy(),
+          FormControl<String>.lazy(),
+        ],
+        disabled: true,
+      );
 
       // When: enabled child
       array.controls.first.markAsEnabled();
@@ -705,10 +924,16 @@ void main() {
 
     test('Patch array value', () {
       // Given: an array
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-        FormControl<int>(value: 2),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          ),
+          FormControl<int>.lazy(
+            value: 2,
+          ),
+        ],
+      );
 
       // When: patch array value
       array.patchValue([2]);
@@ -721,9 +946,13 @@ void main() {
         'Test that markAsPending() a control, set pending status to the array '
         'as well.', () {
       // Given: an array with valid status.
-      final array = FormArray<int>([
-        FormControl<int>(value: 1),
-      ]);
+      final array = FormArray<int>.lazy(
+        [
+          FormControl<int>.lazy(
+            value: 1,
+          )
+        ],
+      );
 
       // Expect: the array to be VALID and not PENDING.
       expect(array.valid, true);

@@ -67,26 +67,79 @@ class FormBuilder {
     final map = controls
         .map<String, AbstractControl<dynamic>>((String key, Object value) {
       if (value is String) {
-        return MapEntry(key, FormControl<String>(value: value));
+        return MapEntry(
+          key,
+          FormControl<String>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is int) {
-        return MapEntry(key, FormControl<int>(value: value));
+        return MapEntry(
+          key,
+          FormControl<int>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is bool) {
-        return MapEntry(key, FormControl<bool>(value: value));
+        return MapEntry(
+          key,
+          FormControl<bool>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is double) {
-        return MapEntry(key, FormControl<double>(value: value));
+        return MapEntry(
+          key,
+          FormControl<double>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is DateTime) {
-        return MapEntry(key, FormControl<DateTime>(value: value));
+        return MapEntry(
+          key,
+          FormControl<DateTime>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is TimeOfDay) {
-        return MapEntry(key, FormControl<TimeOfDay>(value: value));
+        return MapEntry(
+          key,
+          FormControl<TimeOfDay>.lazy(
+            value: value,
+            perf: true,
+          ),
+        );
       } else if (value is AbstractControl<dynamic>) {
         return MapEntry(key, value);
       } else if (value is Validator<dynamic>) {
-        return MapEntry(key, FormControl<dynamic>(validators: [value]));
+        return MapEntry(
+          key,
+          FormControl<dynamic>.lazy(
+            validators: [value],
+            perf: true,
+          ),
+        );
       } else if (value is List<Validator<dynamic>>) {
-        return MapEntry(key, FormControl<dynamic>(validators: value));
+        return MapEntry(
+          key,
+          FormControl<dynamic>.lazy(
+            validators: value,
+            perf: true,
+          ),
+        );
       } else if (value is List<Object?>) {
         if (value.isEmpty) {
-          return MapEntry(key, FormControl<dynamic>());
+          return MapEntry(
+            key,
+            FormControl<dynamic>.lazy(
+              perf: true,
+            ),
+          );
         } else {
           final defaultValue = value.first;
           final validators = List.of(value.skip(1));
@@ -110,7 +163,7 @@ class FormBuilder {
         }
       }
 
-      return MapEntry(key, FormControl<dynamic>(value: value));
+      return MapEntry(key, FormControl<dynamic>.lazy(value: value));
     });
 
     return FormGroup(
@@ -164,7 +217,7 @@ class FormBuilder {
     List<Validator<dynamic>> validators = const [],
     List<AsyncValidator<dynamic>> asyncValidators = const [],
   ]) {
-    return FormControl<T>(
+    return FormControl<T>.lazy(
       value: value,
       validators: validators,
       asyncValidators: asyncValidators,
@@ -228,20 +281,46 @@ class FormBuilder {
     }
 
     if (value is String) {
-      return FormControl<String>(value: value, validators: validators);
+      return FormControl<String>.lazy(
+        value: value,
+        validators: validators,
+        perf: true,
+      );
     } else if (value is int) {
-      return FormControl<int>(value: value, validators: validators);
+      return FormControl<int>.lazy(
+        value: value,
+        validators: validators,
+        perf: true,
+      );
     } else if (value is bool) {
-      return FormControl<bool>(value: value, validators: validators);
+      return FormControl<bool>.lazy(
+        value: value,
+        validators: validators,
+        perf: true,
+      );
     } else if (value is double) {
-      return FormControl<double>(value: value, validators: validators);
+      return FormControl<double>.lazy(
+        value: value,
+        validators: validators,
+        perf: true,
+      );
     } else if (value is DateTime) {
-      return FormControl<DateTime>(value: value);
+      return FormControl<DateTime>.lazy(
+        value: value,
+        perf: true,
+      );
     } else if (value is TimeOfDay) {
-      return FormControl<TimeOfDay>(value: value);
+      return FormControl<TimeOfDay>.lazy(
+        value: value,
+        perf: true,
+      );
     }
 
-    return FormControl<dynamic>(value: value, validators: validators);
+    return FormControl<dynamic>.lazy(
+      value: value,
+      validators: validators,
+      perf: true,
+    );
   }
 }
 

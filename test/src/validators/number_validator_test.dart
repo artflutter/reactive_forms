@@ -5,7 +5,8 @@ import 'package:reactive_forms/src/validators/number_validator_error.dart';
 void main() {
   group('Number Validator Tests', () {
     test('FormControl invalid if not a number', () {
-      final control = FormControl<String>(validators: [Validators.number()]);
+      final control =
+          FormControl<String>.lazy(validators: [Validators.number()]);
 
       control.value = 'hello';
 
@@ -14,7 +15,10 @@ void main() {
     });
 
     test('FormControl invalid if value is null', () {
-      final control = FormControl<String>(validators: [Validators.number()]);
+      final control = FormControl<String>.lazy(
+        validators: [Validators.number()],
+      );
+      control.updateValueAndValidity(updateParent: false);
 
       expect(control.valid, false);
       expect(control.hasError(ValidationMessage.number), true);
@@ -24,7 +28,7 @@ void main() {
     });
 
     test('FormControl valid if value is null and null values is allowed', () {
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         validators: [Validators.number(allowNull: true)],
       );
 
@@ -33,7 +37,8 @@ void main() {
     });
 
     test('FormControl valid if a number', () {
-      final control = FormControl<String>(validators: [Validators.number()]);
+      final control =
+          FormControl<String>.lazy(validators: [Validators.number()]);
 
       control.value = '10';
 
@@ -41,7 +46,8 @@ void main() {
     });
 
     test('FormControl negative number', () {
-      final control = FormControl<String>(validators: [Validators.number()]);
+      final control =
+          FormControl<String>.lazy(validators: [Validators.number()]);
 
       control.value = '-10';
 
@@ -49,7 +55,7 @@ void main() {
     });
 
     test('FormControl decimal numbers', () {
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         validators: [Validators.number(allowedDecimals: 3)],
       );
 
@@ -59,7 +65,7 @@ void main() {
     });
 
     test('FormControl invalid decimal number with default allowedDecimals', () {
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         validators: [Validators.number()],
       );
 
@@ -73,7 +79,7 @@ void main() {
     });
 
     test('FormControl invalid decimal numbers', () {
-      final control = FormControl<String>(
+      final control = FormControl<String>.lazy(
         validators: [Validators.number(allowedDecimals: 2)],
       );
 

@@ -8,7 +8,7 @@ void main() {
     test('FormControl invalid if value not matched pattern', () {
       const americanExpressPattern = r'^3[47][0-9]{13}$';
 
-      final cardNumber = FormControl<String>(
+      final cardNumber = FormControl<String>.lazy(
         validators: [Validators.pattern(americanExpressPattern)],
       );
 
@@ -21,7 +21,7 @@ void main() {
     test('FormControl valid if value matched pattern', () {
       const americanExpressPattern = r'^3[47][0-9]{13}$';
 
-      final cardNumber = FormControl<String>(
+      final cardNumber = FormControl<String>.lazy(
         validators: [Validators.pattern(americanExpressPattern)],
       );
 
@@ -34,7 +34,7 @@ void main() {
     test('Passing a Regex to Pattern validator', () {
       const americanExpressPattern = r'^3[47][0-9]{13}$';
 
-      final cardNumber = FormControl<String>(
+      final cardNumber = FormControl<String>.lazy(
         validators: [Validators.pattern(RegExp(americanExpressPattern))],
       );
 
@@ -47,7 +47,7 @@ void main() {
     test('Passing a MockPattern to Pattern validator', () {
       const americanExpressPattern = r'^3[47][0-9]{13}$';
 
-      final cardNumber = FormControl<String>(
+      final cardNumber = FormControl<String>.lazy(
         validators: [
           Validators.pattern(MockPattern(RegExp(americanExpressPattern)))
         ],
@@ -68,7 +68,7 @@ void main() {
       const containsNumbersValidationMessage = 'containsNumbers';
 
       // And: a control with pattern validators
-      final password = FormControl<String>(
+      final password = FormControl<String>.lazy(
         value: '123abc',
         validators: [
           Validators.pattern(
@@ -104,7 +104,7 @@ void main() {
       const containsNumbersValidationMessage = 'containsNumbers';
 
       // And: a control with pattern validators
-      final password = FormControl<String>(
+      final password = FormControl<String>.lazy(
         validators: [
           Validators.pattern(
             containsLettersPattern,
@@ -139,7 +139,7 @@ void main() {
       const containsNumbersValidationMessage = 'containsNumbers';
 
       // And: a control with pattern validators
-      final password = FormControl<String>(
+      final password = FormControl<String>.lazy(
         validators: [
           Validators.pattern(
             containsLettersPattern,

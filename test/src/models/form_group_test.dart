@@ -6,45 +6,60 @@ import 'package:reactive_forms/reactive_forms.dart';
 void main() {
   group('Form Group', () {
     test('FormGroup is valid by default', () {
-      final form = FormGroup({});
+      final form = FormGroup.lazy(
+        {},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.valid, true);
     });
 
     test('FormGroup is valid if FormControl is valid', () {
-      final form = FormGroup({
-        'name': FormControl<dynamic>(),
-      });
+      final form = FormGroup.lazy(
+        {'name': FormControl<dynamic>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.valid, true);
     });
 
     test('FormGroup is invalid if FormControl is invalid', () {
-      final form = FormGroup({
-        'name': FormControl<dynamic>(validators: [Validators.required]),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<dynamic>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.valid, false);
     });
 
     test('FormGroup is valid if required FormControl has default value', () {
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'hello',
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'hello',
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.valid, true);
     });
 
     test('FormGroup is invalid if set invalid value to FormControl', () {
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'hello',
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'hello',
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       form.control('name').value = null;
 
@@ -52,11 +67,14 @@ void main() {
     });
 
     test('FormGroup is valid if set valid value to FormControl', () {
-      final form = FormGroup({
-        'name': FormControl<String>(
-          validators: [Validators.required],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       form.control('name').value = 'hello';
 
@@ -64,39 +82,48 @@ void main() {
     });
 
     test('FormGroup is invalid if all FormControl are invalid', () {
-      final form = FormGroup({
-        'name': FormControl<String>(validators: [Validators.required]),
-        'email': FormControl<String>(validators: [Validators.email]),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+          'email': FormControl<String>.lazy(
+            validators: [Validators.email],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.invalid, true);
     });
 
     test('FormGroup is invalid if at least one FormControl is invalid', () {
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'hello',
-          validators: [Validators.required],
-        ),
-        'email': FormControl<String>(validators: [
-          Validators.required,
-          Validators.email,
-        ]),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'hello',
+            validators: [Validators.required],
+          ),
+          'email': FormControl<String>.lazy(
+            validators: [Validators.required, Validators.email],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.valid, false);
     });
 
     test('FormGroup contains all matching errors of nested controls', () {
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'hi',
-          validators: [
-            Validators.required,
-            Validators.minLength(5),
-          ],
-        ),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'hi',
+            validators: [Validators.required, Validators.minLength(5)],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       expect(form.errors.keys.length, 1);
       expect(form.errors['name'] != null, true, reason: 'Name');
@@ -105,10 +132,17 @@ void main() {
     });
 
     test('Reset group restores value of all controls to null', () {
-      final formGroup = FormGroup({
-        'name': FormControl<String>(value: 'john doe'),
-        'email': FormControl<String>(value: 'johndoe@reactiveforms.com'),
-      });
+      final formGroup = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'john doe',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'johndoe@reactiveforms.com',
+          ),
+        },
+      );
+      formGroup.updateValueAndValidity(updateParent: false);
 
       formGroup.control('name').value = 'hello john';
       formGroup.control('email').value = 'john@reactiveforms.com';
@@ -120,25 +154,32 @@ void main() {
     });
 
     test('Set value to FormGroup', () {
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
-      form.value = {
-        'name': 'John Doe',
-        'email': 'johndoe@email.com',
-      };
+      form.value = {'name': 'John Doe', 'email': 'johndoe@email.com'};
 
       expect(form.control('name').value, 'John Doe');
       expect(form.control('email').value, 'johndoe@email.com');
     });
 
     test('Get value returns a Map with controls name and values', () {
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'john'),
-        'email': FormControl<String>(value: 'john@email.com'),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'john',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'john@email.com',
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       final value = form.value;
 
@@ -146,25 +187,38 @@ void main() {
     });
 
     test('Throws FormControlNotFoundException if invalid control name', () {
-      final form = FormGroup({});
+      final form = FormGroup.lazy(
+        {},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
-      expect(() => form.control('does not exist'),
-          throwsA(isInstanceOf<FormControlNotFoundException>()));
+      expect(
+        () => form.control('does not exist'),
+        throwsA(isInstanceOf<FormControlNotFoundException>()),
+      );
     });
 
     test('Throws FormControlNotFoundException if not control found', () {
-      final form = FormGroup({'someControl': FormControl<String>()});
+      final form = FormGroup.lazy(
+        {'someControl': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
-      expect(() => form.control('does not exist'),
-          throwsA(isInstanceOf<FormControlNotFoundException>()));
+      expect(
+        () => form.control('does not exist'),
+        throwsA(isInstanceOf<FormControlNotFoundException>()),
+      );
     });
 
     test('Mark form as touched mark all controls in the form as touched', () {
       // Given: an untouched form
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: all controls are untouched
       expect(form.control('name').touched, false);
@@ -180,10 +234,17 @@ void main() {
 
     test('Mark form as untouched mark all controls as untouched', () {
       // Given: a form with touched controls
-      final form = FormGroup({
-        'name': FormControl<String>(touched: true),
-        'email': FormControl<String>(touched: true),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            touched: true,
+          ),
+          'email': FormControl<String>.lazy(
+            touched: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: all controls are touched
       expect(form.control('name').touched, true);
@@ -199,10 +260,15 @@ void main() {
 
     test('The form is touched if at least one control is touched', () {
       // Given: a form with only one control touched
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(touched: true),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(
+            touched: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: the form is touched
       expect(form.touched, true);
@@ -210,10 +276,13 @@ void main() {
 
     test('The form is untouched if all control are untouched', () {
       // Given: a form with no touched controls
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: the form is touched
       expect(form.touched, false);
@@ -221,11 +290,14 @@ void main() {
 
     test('FormGroup.controls contains controls collection', () {
       // Given: a group with three controls
-      final group = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-        'password': FormControl<String>(),
-      });
+      final group = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+          'password': FormControl<String>.lazy(),
+        },
+      );
+      group.updateValueAndValidity(updateParent: false);
 
       // When: count children of array
       final count = group.controls.length;
@@ -244,9 +316,10 @@ void main() {
 
     test('Group notify value changes when control value changes', () {
       // Given: a form with a controls
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
+      final form = FormGroup.lazy(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       final value = 'Reactive Forms';
 
@@ -259,9 +332,10 @@ void main() {
 
     test('When a group is disable then all children are disabled', () {
       // Given: a form with controls
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: disable group
       form.markAsDisabled();
@@ -273,10 +347,18 @@ void main() {
 
     test('A control disabled is not part of group value', () {
       // Given: a form with a disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(value: 'Forms', disabled: true),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'Forms',
+            disabled: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: get form value
       final formValue = form.value;
@@ -290,10 +372,18 @@ void main() {
 
     test('Enable a group enable children and recalculate validity', () {
       // Given: a form with a disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(value: 'Forms', disabled: true),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'Forms',
+            disabled: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: enable form
       form.markAsEnabled();
@@ -304,11 +394,18 @@ void main() {
 
     test('Group valid when invalid control is disable', () {
       // Given: a form with an invalid disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(
-            disabled: true, validators: [Validators.required]),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            disabled: true,
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // Expect: form is valid
       expect(form.valid, true);
@@ -317,10 +414,17 @@ void main() {
 
     test('Group valid when invalid control is disable', () {
       // Given: a form with an invalid control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(validators: [Validators.required]),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: disable invalid control
       form.control('email').markAsDisabled();
@@ -332,11 +436,18 @@ void main() {
 
     test('Group invalid when enable invalid control', () {
       // Given: a form with a invalid disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(
-            disabled: true, validators: [Validators.required]),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            disabled: true,
+            validators: [Validators.required],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: enable invalid control
       form.control('email').markAsEnabled();
@@ -348,9 +459,10 @@ void main() {
 
     test('State error if dispose a Group and try to change control value', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: dispose the form
       form.dispose();
@@ -364,18 +476,19 @@ void main() {
 
     test('Resets a group and set initial values', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'someInitialValue',
-          touched: true,
-        ),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'someInitialValue',
+            touched: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: resets the group
       final initialValue = 'otherInitialValue';
-      form.reset(value: {
-        'name': initialValue,
-      });
+      form.reset(value: {'name': initialValue});
 
       // Then: value of the control has the new initial value
       expect(form.control('name').value, initialValue);
@@ -384,12 +497,15 @@ void main() {
 
     test('Resets a group and set initial values and disabled', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'someInitialValue',
-          touched: true,
-        ),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'someInitialValue',
+            touched: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: resets the group
       final initialValue = 'otherInitialValue';
@@ -405,12 +521,15 @@ void main() {
 
     test('Resets a group with empty {} state', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(
-          value: 'someInitialValue',
-          touched: true,
-        ),
-      });
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'someInitialValue',
+            touched: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
 
       // When: resets the group
       form.resetState({});
@@ -422,10 +541,10 @@ void main() {
 
     test('Reset a group marks it as pristine', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: marks it as dirty
       form.markAsDirty();
 
@@ -441,10 +560,10 @@ void main() {
 
     test('Resets a group state marks it as pristine', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: marks it as dirty
       form.markAsDirty();
 
@@ -461,10 +580,14 @@ void main() {
 
     test('Resets a group state marks it as pristine', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'initial value'),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'initial value',
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: marks it as dirty
       form.markAsDirty();
 
@@ -481,13 +604,21 @@ void main() {
 
     test('Get control with nested name', () {
       // Given: a nested group
-      final form = FormGroup({
-        'address': FormGroup({
-          'zipCode': FormControl<int>(value: 1000),
-          'city': FormControl<String>(value: 'Sofia'),
-        }),
-      });
-
+      final form = FormGroup(
+        {
+          'address': FormGroup(
+            {
+              'zipCode': FormControl<int>.lazy(
+                value: 1000,
+              ),
+              'city': FormControl<String>.lazy(
+                value: 'Sofia',
+              ),
+            },
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: gets nested control value
       final city = form.control('address.city');
 
@@ -499,15 +630,25 @@ void main() {
 
     test('Get control with nested deep name', () {
       // Given: a nested group
-      final form = FormGroup({
-        'address': FormArray([
-          FormGroup({
-            'zipCode': FormControl<int>(value: 1000),
-            'city': FormControl<String>(value: 'Sofia'),
-          })
-        ]),
-      });
-
+      final form = FormGroup(
+        {
+          'address': FormArray.lazy(
+            [
+              FormGroup(
+                {
+                  'zipCode': FormControl<int>.lazy(
+                    value: 1000,
+                  ),
+                  'city': FormControl<String>.lazy(
+                    value: 'Sofia',
+                  ),
+                },
+              ),
+            ],
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: gets nested control value
       final city = form.control('address.0.city');
 
@@ -519,10 +660,10 @@ void main() {
 
     test('Focused a control that does not exists', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: set a control focus to a control that does not exist
       form.focus('email');
 
@@ -533,41 +674,51 @@ void main() {
 
     test('Focused a control', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: set a control focus
       form.focus('name');
 
       // Then: control is focused
-      expect((form.control('name') as FormControl).hasFocus, true,
-          reason: 'control is not focused');
+      expect(
+        (form.control('name') as FormControl).hasFocus,
+        true,
+        reason: 'control is not focused',
+      );
     });
 
     test('Focused a nested control', () {
       // Given: a group
-      final form = FormGroup({
-        'person': FormGroup({
-          'name': FormControl<String>(),
-        }),
-      });
-
+      final form = FormGroup(
+        {
+          'person': FormGroup(
+            {'name': FormControl<String>.lazy()},
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: set a control focus
       form.focus('person.name');
 
       // Then: control is focused
-      expect((form.control('person.name') as FormControl).hasFocus, true,
-          reason: 'control is not focused');
+      expect(
+        (form.control('person.name') as FormControl).hasFocus,
+        true,
+        reason: 'control is not focused',
+      );
     });
 
     test('Remove Focus to all control', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // And: all control with focus
       form.focus('name');
       form.focus('email');
@@ -576,23 +727,37 @@ void main() {
       form.unfocus();
 
       // Then: any control has focus
-      expect((form.control('name') as FormControl).hasFocus, false,
-          reason: 'control is focused');
-      expect((form.control('name') as FormControl).touched, false,
-          reason: 'control is not touched');
-      expect((form.control('email') as FormControl).hasFocus, false,
-          reason: 'control is focused');
-      expect((form.control('email') as FormControl).touched, false,
-          reason: 'control is not touched');
+      expect(
+        (form.control('name') as FormControl).hasFocus,
+        false,
+        reason: 'control is focused',
+      );
+      expect(
+        (form.control('name') as FormControl).touched,
+        false,
+        reason: 'control is not touched',
+      );
+      expect(
+        (form.control('email') as FormControl).hasFocus,
+        false,
+        reason: 'control is focused',
+      );
+      expect(
+        (form.control('email') as FormControl).touched,
+        false,
+        reason: 'control is not touched',
+      );
     });
 
     test('Remove Focus and mark untouched to all control', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // And: all control with focus
       form.focus('name');
       form.focus('email');
@@ -617,15 +782,15 @@ void main() {
 
     test('Add controls to the FormGroup', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: add controls
-      form.addAll({
-        'password': FormControl<String>(),
-      });
+      form.addAll({'password': FormControl<String>.lazy()});
 
       // Then: controls are added
       expect(form.controls.length, 3, reason: 'controls were not added');
@@ -633,15 +798,15 @@ void main() {
 
     test('Add controls to the FormGroup', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: add controls
-      form.addAll({
-        'password': FormControl<String>(),
-      });
+      form.addAll({'password': FormControl<String>.lazy()});
 
       // Then: controls are added
       expect(form.controls.length, 3, reason: 'controls were not added');
@@ -649,20 +814,18 @@ void main() {
 
     test("Add control to the FormGroup update control's parent property", () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // And: a control
-      final email = FormControl<String>();
+      final email = FormControl<String>.lazy();
 
       // Expect: control doesn't have parent
       expect(email.parent, null);
 
       // When: add control to the group
-      form.addAll({
-        'email': email,
-      });
+      form.addAll({'email': email});
 
       // Then: control parent is updated
       expect(email.parent, form, reason: 'parent did not update');
@@ -670,10 +833,10 @@ void main() {
 
     test('Mark a control as pristine also marks the parent as pristine', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {'name': FormControl<String>.lazy()},
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: mark control as dirty
       form.control('name').markAsDirty();
 
@@ -685,17 +848,24 @@ void main() {
       form.control('name').markAsPristine();
 
       // Then: control and form are pristine
-      expect(form.control('name').pristine, true,
-          reason: 'control is not pristine');
+      expect(
+        form.control('name').pristine,
+        true,
+        reason: 'control is not pristine',
+      );
       expect(form.pristine, true, reason: 'form is not pristine');
     });
 
     test('Mark a control as untouched also marks the parent as untouched', () {
       // Given: a group with touched control
-      final form = FormGroup({
-        'name': FormControl<String>(touched: true),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            touched: true,
+          )
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: control and form are touched
       expect(form.control('name').touched, true, reason: 'control not touched');
       expect(form.touched, true, reason: 'form not touched');
@@ -710,42 +880,56 @@ void main() {
 
     test('Focus a form marks first control with focus by default', () {
       // Given: a group
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: set focus to the form
       form.focus();
 
       // Then: first control gets focus
-      expect((form.control('name') as FormControl).hasFocus, true,
-          reason: 'first control does not have focus');
-      expect((form.control('email') as FormControl).hasFocus, false,
-          reason: 'other controls have focus');
+      expect(
+        (form.control('name') as FormControl).hasFocus,
+        true,
+        reason: 'first control does not have focus',
+      );
+      expect(
+        (form.control('email') as FormControl).hasFocus,
+        false,
+        reason: 'other controls have focus',
+      );
     });
 
     test('Reports error on deep control path', () {
       // Given: nested group
-      final form = FormGroup({
-        'payment': FormGroup({
-          'amount': FormControl<double>(
-            value: 5.0,
-            validators: [Validators.min(10.0)],
+      final form = FormGroup.lazy(
+        {
+          'payment': FormGroup.lazy(
+            {
+              'amount': FormControl<double>.lazy(
+                value: 5.0,
+                validators: [Validators.min(10.0)],
+              ),
+            },
           ),
-        }),
-        'emailList': FormArray<String>([
-          FormControl<String>(
-            value: 'test@gmail.com',
-            validators: [Validators.email],
+          'emailList': FormArray<String>.lazy(
+            [
+              FormControl<String>.lazy(
+                value: 'test@gmail.com',
+                validators: [Validators.email],
+              ),
+              FormControl<String>.lazy(
+                value: 'test',
+                validators: [Validators.email],
+              ),
+            ],
           ),
-          FormControl<String>(
-            value: 'test',
-            validators: [Validators.email],
-          ),
-        ])
-      });
-
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: get `min` validator error
       final error = form.getError(ValidationMessage.min, 'payment.amount');
 
@@ -753,8 +937,10 @@ void main() {
       expect(error, {'min': 10.0, 'actual': 5.0});
 
       // When: get `email` validator error
-      final emailListError =
-          form.controls['emailList']?.getError(ValidationMessage.email, '1');
+      final emailListError = form.controls['emailList']?.getError(
+        ValidationMessage.email,
+        '1',
+      );
 
       // Then: the error is not null
       expect(emailListError, 'test');
@@ -762,68 +948,97 @@ void main() {
 
     test('Initialize disabled form', () {
       // Given: a disabled form
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      }, disabled: true);
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(),
+          'email': FormControl<String>.lazy(),
+        },
+        disabled: true,
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Then: form is disabled and all controls are disabled
       expect(form.enabled, false, reason: 'form is enabled');
       expect(form.control('name').enabled, false, reason: 'name is enabled');
       expect(form.control('email').enabled, false, reason: 'email is enabled');
     });
 
-    test('Initialized disabled form changes to enable when enable children',
-        () {
-      // Given: a disabled form
-      final form = FormGroup({
-        'name': FormControl<String>(),
-        'email': FormControl<String>(),
-      }, disabled: true);
+    test(
+      'Initialized disabled form changes to enable when enable children',
+      () {
+        // Given: a disabled form
+        final form = FormGroup(
+          {
+            'name': FormControl<String>.lazy(),
+            'email': FormControl<String>.lazy(),
+          },
+          disabled: true,
+        );
+        form.updateValueAndValidity(updateParent: false);
+        // When: enabled child
+        form.control('name').markAsEnabled();
 
-      // When: enabled child
-      form.control('name').markAsEnabled();
-
-      // Then: form is enabled
-      expect(form.enabled, true, reason: 'form is disabled');
-      expect(form.control('name').enabled, true, reason: 'name is disabled');
-      expect(form.control('email').disabled, true, reason: 'email is enabled');
-    });
+        // Then: form is enabled
+        expect(form.enabled, true, reason: 'form is disabled');
+        expect(form.control('name').enabled, true, reason: 'name is disabled');
+        expect(
+          form.control('email').disabled,
+          true,
+          reason: 'email is enabled',
+        );
+      },
+    );
 
     test('Patch form group value', () {
       // Given: a form
       final email = 'john@email.com';
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'John'),
-        'email': FormControl<String>(value: email),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'John',
+          ),
+          'email': FormControl<String>.lazy(
+            value: email,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: patch form value
       final name = 'John Doe';
-      form.patchValue({
-        'name': name,
-      });
+      form.patchValue({'name': name});
 
       // Then: form value is patched
-      expect(form.value, {'name': name, 'email': email},
+      expect(
+          form.value,
+          {
+            'name': name,
+            'email': email,
+          },
           reason: 'form value not patched');
     });
 
     test('Patch nested form group value', () {
       // Given: a form
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'John'),
-        'address': FormGroup({
-          'country': FormControl<String>(value: 'Bulgaria'),
-          'city': FormControl<String>(value: 'Sofia'),
-        }),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'John',
+          ),
+          'address': FormGroup(
+            {
+              'country': FormControl<String>.lazy(
+                value: 'Bulgaria',
+              ),
+              'city': FormControl<String>.lazy(
+                value: 'Sofia',
+              ),
+            },
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: patch form value
       form.patchValue({
-        'address': {
-          'city': 'Varna',
-        },
+        'address': {'city': 'Varna'},
       });
 
       // Then: form value is patched
@@ -831,27 +1046,34 @@ void main() {
           form.value,
           {
             'name': 'John',
-            'address': {
-              'country': 'Bulgaria',
-              'city': 'Varna',
-            }
+            'address': {'country': 'Bulgaria', 'city': 'Varna'},
           },
           reason: 'form value not patched');
     });
 
     test('Add all controls to a sub-group', () {
       // Given: a nested form
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'John'),
-        'address': FormGroup({
-          'country': FormControl<String>(value: 'Bulgaria'),
-        }),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'John',
+          ),
+          'address': FormGroup(
+            {
+              'country': FormControl<String>.lazy(
+                value: 'Bulgaria',
+              ),
+            },
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: add control to nested group
       final address = form.control('address') as FormGroup;
       address.addAll({
-        'city': FormControl<String>(value: 'Sofia'),
+        'city': FormControl<String>.lazy(
+          value: 'Sofia',
+        )
       });
 
       // Then: form control is added
@@ -859,21 +1081,25 @@ void main() {
           form.value,
           {
             'name': 'John',
-            'address': {
-              'country': 'Bulgaria',
-              'city': 'Sofia',
-            }
+            'address': {'country': 'Bulgaria', 'city': 'Sofia'},
           },
           reason: 'form value not added');
     });
 
     test('A control disabled is part of group Raw Value', () {
       // Given: a form with a disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Flutter Reactive Forms'),
-        'email': FormControl<String>(value: 'rf@email.com', disabled: true),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Flutter Reactive Forms',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'rf@email.com',
+            disabled: true,
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: raw value includes disabled controls
       expect(form.rawValue, {
         'name': 'Flutter Reactive Forms',
@@ -883,48 +1109,81 @@ void main() {
 
     test('A control disabled is part of recursive group Raw Value', () {
       // Given: a nested form group with a disable control
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Flutter Reactive Forms'),
-        'email': FormControl<String>(value: 'rf@email.com', disabled: true),
-        'address': FormGroup({
-          'city': FormControl<String>(value: 'Toronto'),
-          'street': FormControl<String>(value: 'Cherry St', disabled: true)
-        })
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Flutter Reactive Forms',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'rf@email.com',
+            disabled: true,
+          ),
+          'address': FormGroup(
+            {
+              'city': FormControl<String>.lazy(
+                value: 'Toronto',
+              ),
+              'street': FormControl<String>.lazy(
+                value: 'Cherry St',
+                disabled: true,
+              ),
+            },
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: raw value includes disabled controls
       expect(form.rawValue, {
         'name': 'Flutter Reactive Forms',
         'email': 'rf@email.com',
-        'address': {'city': 'Toronto', 'street': 'Cherry St'}
+        'address': {'city': 'Toronto', 'street': 'Cherry St'},
       });
     });
 
     test(
-        'Disabled children of nested array are part of recursive group Raw Value',
-        () {
-      // Given: a nested form group with a disable control
-      final form = FormGroup({
-        'brands': FormArray<String>([
-          FormControl<String>(value: 'Nissan'),
-          FormControl<String>(value: 'Mercedes', disabled: true),
-          FormControl<String>(value: 'Toyota'),
-        ])
-      });
-
-      // Expect: raw value includes disabled controls
-      expect(form.rawValue, {
-        'brands': ['Nissan', 'Mercedes', 'Toyota']
-      });
-    });
+      'Disabled children of nested array are part of recursive group Raw Value',
+      () {
+        // Given: a nested form group with a disable control
+        final form = FormGroup(
+          {
+            'brands': FormArray<String>.lazy(
+              [
+                FormControl<String>.lazy(
+                  value: 'Nissan',
+                ),
+                FormControl<String>.lazy(
+                  value: 'Mercedes',
+                  disabled: true,
+                ),
+                FormControl<String>.lazy(
+                  value: 'Toyota',
+                ),
+              ],
+            ),
+          },
+        );
+        form.updateValueAndValidity(updateParent: false);
+        // Expect: raw value includes disabled controls
+        expect(form.rawValue, {
+          'brands': ['Nissan', 'Mercedes', 'Toyota'],
+        });
+      },
+    );
 
     test('A disabled group includes all controls in the value', () {
       // Given: a disabled group
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Flutter Reactive Forms'),
-        'email': FormControl<String>(value: 'rf@email.com'),
-      }, disabled: true);
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Flutter Reactive Forms',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'rf@email.com',
+          ),
+        },
+        disabled: true,
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: value  and raw value includes disabled controls
       expect(form.value, {
         'name': 'Flutter Reactive Forms',
@@ -939,11 +1198,17 @@ void main() {
 
     test('Remove control from FormGroup', () {
       // Given: a form with a two controls
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(value: 'Forms'),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'Forms',
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: form has all controls
       expect(form.controls.length, 2);
       expect(form.controls.containsKey('name'), true);
@@ -960,11 +1225,17 @@ void main() {
 
     test('Remove control that does not exists throws exception', () {
       // Given: a form with a two controls
-      final form = FormGroup({
-        'name': FormControl<String>(value: 'Reactive'),
-        'email': FormControl<String>(value: 'Forms'),
-      });
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: 'Reactive',
+          ),
+          'email': FormControl<String>.lazy(
+            value: 'Forms',
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // When: remove a control that does not exists
       void remove() => form.removeControl('some other control');
 
@@ -974,10 +1245,16 @@ void main() {
 
     test('Throws assertion error on name containing dot(.)', () {
       // Given: a form with a two controls
-      void form() => FormGroup({
-            'na.me': FormControl<String>(value: 'Reactive'),
-            'email': FormControl<String>(value: 'Forms'),
-          });
+      void form() => FormGroup(
+            {
+              'na.me': FormControl<String>.lazy(
+                value: 'Reactive',
+              ),
+              'email': FormControl<String>.lazy(
+                value: 'Forms',
+              ),
+            },
+          );
 
       // Expect: an assertion error
       expect(form, throwsAssertionError);
@@ -987,9 +1264,14 @@ void main() {
         'Test that markAsPending() a control, set pending status to the group '
         'as well.', () {
       // Given: a form group with valid status.
-      final form =
-          FormGroup({'name': FormControl<String>(value: "Reactive Forms")});
-
+      final form = FormGroup(
+        {
+          'name': FormControl<String>.lazy(
+            value: "Reactive Forms",
+          ),
+        },
+      );
+      form.updateValueAndValidity(updateParent: false);
       // Expect: the group to be VALID and not PENDING.
       expect(form.valid, true);
       expect(form.pending, false);

@@ -6,43 +6,40 @@ import 'reactive_value_listenable_builder_testing_widget.dart';
 
 void main() {
   group('ReactiveValueListenableBuilder Tests', () {
-    testWidgets(
-      'Text widget init with control default value',
-      (WidgetTester tester) async {
-        // Given: a form and a String field with a default value
-        final defaultValue = 'Reactive Forms';
-        final form = FormGroup({
-          'name': FormControl<String>(value: defaultValue),
-        });
-
-        // And: a widget is bind to the form
-        await tester.pumpWidget(
-          ReactiveValueListenableTestingWidget(
-            form: form,
+    testWidgets('Text widget init with control default value', (
+      WidgetTester tester,
+    ) async {
+      // Given: a form and a String field with a default value
+      final defaultValue = 'Reactive Forms';
+      final form = FormGroup.lazy(
+        {
+          'name': FormControl<String>.lazy(
+            value: defaultValue,
           ),
-        );
+        },
+      );
 
-        // When: get text widget
-        final text = tester.widget<Text>(find.byType(Text));
+      // And: a widget is bind to the form
+      await tester.pumpWidget(ReactiveValueListenableTestingWidget(form: form));
 
-        // Then: the text value is equal to control default value
-        expect(text.data, defaultValue);
-      },
-    );
+      // When: get text widget
+      final text = tester.widget<Text>(find.byType(Text));
+
+      // Then: the text value is equal to control default value
+      expect(text.data, defaultValue);
+    });
 
     testWidgets(
       'When control value changes text widget rebuilds with new value',
       (WidgetTester tester) async {
         // Given: a form and a String field
-        final form = FormGroup({
-          'name': FormControl<String>(),
-        });
+        final form = FormGroup.lazy(
+          {'name': FormControl<String>.lazy()},
+        );
 
         // And: a widget is bind to the form
         await tester.pumpWidget(
-          ReactiveValueListenableTestingWidget(
-            form: form,
-          ),
+          ReactiveValueListenableTestingWidget(form: form),
         );
 
         //When: set control value
@@ -56,32 +53,30 @@ void main() {
       },
     );
 
-    testWidgets(
-      'Assert error thrown if formControlName is null',
-      (WidgetTester tester) async {
-        // Given: a ReactiveValueListenableBuilder with null formControlName
-        void reactiveWidget() => ReactiveValueListenableBuilder(
-              formControlName: null,
-              builder: (context, control, child) => Container(),
-            );
+    testWidgets('Assert error thrown if formControlName is null', (
+      WidgetTester tester,
+    ) async {
+      // Given: a ReactiveValueListenableBuilder with null formControlName
+      void reactiveWidget() => ReactiveValueListenableBuilder(
+            formControlName: null,
+            builder: (context, control, child) => Container(),
+          );
 
-        // Expect assertion error
-        expect(reactiveWidget, throwsAssertionError);
-      },
-    );
+      // Expect assertion error
+      expect(reactiveWidget, throwsAssertionError);
+    });
 
-    testWidgets(
-      'Assert error thrown if formControl is null',
-      (WidgetTester tester) async {
-        // Given: a ReactiveValueListenableBuilder with null formControlName
-        void reactiveWidget() => ReactiveValueListenableBuilder(
-              formControl: null,
-              builder: (context, control, child) => Container(),
-            );
+    testWidgets('Assert error thrown if formControl is null', (
+      WidgetTester tester,
+    ) async {
+      // Given: a ReactiveValueListenableBuilder with null formControlName
+      void reactiveWidget() => ReactiveValueListenableBuilder(
+            formControl: null,
+            builder: (context, control, child) => Container(),
+          );
 
-        // Expect assertion error
-        expect(reactiveWidget, throwsAssertionError);
-      },
-    );
+      // Expect assertion error
+      expect(reactiveWidget, throwsAssertionError);
+    });
   });
 }
